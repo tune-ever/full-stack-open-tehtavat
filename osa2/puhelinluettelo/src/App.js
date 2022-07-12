@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import noteService from './services/notes'
-import notes from './services/notes'
 
 const App = () => {
 
@@ -9,6 +7,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [notify, setNotify] = useState('')
+
 
   useEffect(() => {
     noteService
@@ -16,29 +16,46 @@ const App = () => {
       .then(response => setPersons(response.data))
   }, [])
 
+  const updateData = (nameObject) => {
+    const findingId = persons.filter(e => e.name === newName)
+      const id = findingId[0].id
+      if(window.confirm(`${newName} is already added to the
+      phonebook, replace old number with a new one?`)){
+          noteService
+            .update(id, nameObject)
+            .then(updatePersons)
+            .then(setNotify("Updated " + newName))
+            .then(setTimeout(() => {setNotify("")}, 3000))
+            .catch(error => {
+              throwError(newName)
+              console.log(error)
+            })
+      }
+      setNewName('')
+      setNumber('')
+  }
+
+  const throwError = (name) => {
+    setNotify("Information of " + name + " has already been removed.")
+  }
+
   const addData = (event) => {
     const nameObject = {
       name:newName,
       number: newNumber
     }
     event.preventDefault()
+    // IF name is already on list, we UPDATE:
     if(persons.some(person => person.name === newName)){
-      const findingId = persons.filter(e => e.name === newName)
-      const id = findingId[0].id
-      if(window.confirm(`${newName} is already added to the
-      phonebook, replace old number with a new one?`)){
-          noteService
-          .update(id, nameObject)
-          .then(updatePersons)
-      }
-      setNewName('')
-      setNumber('')
+      updateData(nameObject)
     }
     else{
       noteService
         .create(nameObject)
         .then(response => {
           setPersons(persons.concat(response.data))
+          setNotify("Added " + newName)
+          setTimeout(() => {setNotify("")}, 3000)
           setNewName('')
           setNumber('')
         })
@@ -58,10 +75,14 @@ const App = () => {
   }
 
   const handleDelete = (id) => {
-    if(window.confirm(`Delete ${persons[id-1].name}?`)){
+    const objectToDelete = persons.filter(e => e.id == id)
+    const nameToPrint = objectToDelete[0].name
+    if(window.confirm(`Delete ${nameToPrint}?`)){
       noteService
       .deleteName(id)
       .then(updatePersons)
+      .then(setNotify("Deleted " + nameToPrint))
+      .then(setTimeout(() => {setNotify("")}, 3000))
     }
   }
 
@@ -74,6 +95,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={notify}/>
       <Filter filter={filter} handleChange={handleFilterChange} />
       <h2>Add new data</h2>
       <AddPerson addData={addData} newName={newName} handleNameChange={handleNameChange}
@@ -85,6 +107,14 @@ const App = () => {
 
 }
 
+const Notification = ({message}) => {
+  if(message == "") return null
+  else if (message.slice(0, 11) == "Information")
+    return <div className='error'>{`${message}`}</div>
+  else
+    return <div className='notification'>{`${message}`}</div>
+}
+
 const AddPerson = (props) =>{
   return (
     <form onSubmit={props.addData}>
@@ -93,6 +123,7 @@ const AddPerson = (props) =>{
       <br/>
       number:
       <input value={props.newNumber} onChange={props.handleNumberChange} />
+      <br/>
       <button type="submit">add</button>
     </form>
   )
