@@ -1,31 +1,47 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import noteService from './services/notes'
+import notes from './services/notes'
 
 const App = () => {
-  const [persons, setPersons] = useState([])
 
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNumber] = useState('')
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+    noteService
+      .getAll()
       .then(response => setPersons(response.data))
   }, [])
 
   const addData = (event) => {
+    const nameObject = {
+      name:newName,
+      number: newNumber
+    }
     event.preventDefault()
-    if(persons.some(person => person.name === newName))
-      alert(`${newName} is already in the phonebook`)
-    else{
-      const nameObject = {
-        name:newName,
-        number: newNumber
+    if(persons.some(person => person.name === newName)){
+      const findingId = persons.filter(e => e.name === newName)
+      const id = findingId[0].id
+      if(window.confirm(`${newName} is already added to the
+      phonebook, replace old number with a new one?`)){
+          noteService
+          .update(id, nameObject)
+          .then(updatePersons)
       }
-      setPersons(persons.concat(nameObject))
       setNewName('')
       setNumber('')
+    }
+    else{
+      noteService
+        .create(nameObject)
+        .then(response => {
+          setPersons(persons.concat(response.data))
+          setNewName('')
+          setNumber('')
+        })
     }
   }
 
@@ -41,6 +57,20 @@ const App = () => {
     setFilter(event.target.value)
   }
 
+  const handleDelete = (id) => {
+    if(window.confirm(`Delete ${persons[id-1].name}?`)){
+      noteService
+      .deleteName(id)
+      .then(updatePersons)
+    }
+  }
+
+  const updatePersons = () => {
+    noteService
+      .getAll()
+      .then(response => setPersons(response.data))
+  }
+
   return (
     <div>
       <h1>Phonebook</h1>
@@ -49,7 +79,7 @@ const App = () => {
       <AddPerson addData={addData} newName={newName} handleNameChange={handleNameChange}
             newNumber={newNumber} handleNumberChange={handleNumberChange} />
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter} />
+      <Persons handleDelete={handleDelete} persons={persons} filter={filter} />
     </div>
   )
 
@@ -83,11 +113,14 @@ const Persons = (props) => {
     persons
       .filter(person => person.name.toLowerCase().includes(filter))
       .map(person => 
-        <Person key={person.name} name={person.name} number={person.number} />
+        <Person handleDelete={props.handleDelete} id={person.id} key={person.name} name={person.name} number={person.number} />
       )
   )
 }
 
-const Person = (props) => <p>{props.name} {props.number}</p>
+const Person = (props) =>
+ <div><p>{props.name} {props.number}</p>
+  <button onClick={() => props.handleDelete(props.id)}>delete</button>
+ </div>
 
 export default App

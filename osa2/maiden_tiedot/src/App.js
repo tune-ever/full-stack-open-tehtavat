@@ -4,6 +4,18 @@ import {useState, useEffect } from 'react'
 
 const App = () => {
   
+  // Wmo weather interpretation codes:
+  const wmo = {
+    0: 'Clear sky',
+    1: 'Mainly clear',
+    2: 'Partly cloudy',
+    3: 'Overcast',
+    45: 'Fog',
+    61: 'Slight rain',
+    63: 'Moderate rain',
+    65: 'Heavy rain'
+  }
+
   const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState('')
   const [weather, setWeather] = useState({})
@@ -36,13 +48,11 @@ const App = () => {
   return (
     <div>
       <Filter filter={filter} handleChange={handleChange} />
-      <PrintData weather={weather} handleClick={handleClick} countries={filtered}/>
+      <PrintData wmo={wmo} weather={weather} handleClick={handleClick} countries={filtered}/>
     </div>
   )
 }
 
-const PrintWeather = ({weather}) => {
-}
 
 const Filter = (props) => {
   return (
@@ -61,7 +71,7 @@ const PrintData = (props) => {
     return props.countries.map(country => <div key={country.name.common}><p>{country.name.common}</p>
     <button onClick={() => props.handleClick(country.name.common)}>show</button></div>)
   else
-    return <CountryBig weather={props.weather} country={props.countries} />
+    return <CountryBig wmo={props.wmo} weather={props.weather} country={props.countries} />
 }
 
 const CountryBig = (props) => {
@@ -82,7 +92,9 @@ const CountryBig = (props) => {
       <p> temperature {currentWeather.temperature} Celsius
         <br/>
         wind {currentWeather.windspeed} m/s
-        </p>
+        <br/>
+        {props.wmo[currentWeather.weathercode]}
+      </p>
       }
     </div>
   )
