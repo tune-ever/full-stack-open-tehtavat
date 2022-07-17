@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import noteService from './services/notes'
+import personService from './services/persons'
 
 const App = () => {
 
@@ -11,7 +11,7 @@ const App = () => {
 
 
   useEffect(() => {
-    noteService
+    personService
       .getAll()
       .then(response => setPersons(response.data))
   }, [])
@@ -21,22 +21,17 @@ const App = () => {
       const id = findingId[0].id
       if(window.confirm(`${newName} is already added to the
       phonebook, replace old number with a new one?`)){
-          noteService
+          personService
             .update(id, nameObject)
             .then(updatePersons)
             .then(setNotify("Updated " + newName))
             .then(setTimeout(() => {setNotify("")}, 3000))
             .catch(error => {
-              throwError(newName)
-              console.log(error)
+              setNotify(JSON.stringify(error.response.data.error))
             })
       }
       setNewName('')
       setNumber('')
-  }
-
-  const throwError = (name) => {
-    setNotify("Information of " + name + " has already been removed.")
   }
 
   const addData = (event) => {
@@ -50,7 +45,7 @@ const App = () => {
       updateData(nameObject)
     }
     else{
-      noteService
+      personService
         .create(nameObject)
         .then(response => {
           setPersons(persons.concat(response.data))
@@ -59,6 +54,10 @@ const App = () => {
           setNewName('')
           setNumber('')
         })
+        .catch(error => {
+          setNotify(error.response.data)
+        })
+        .then(setTimeout(() => {setNotify("")}, 3000))
     }
   }
 
@@ -75,10 +74,10 @@ const App = () => {
   }
 
   const handleDelete = (id) => {
-    const objectToDelete = persons.filter(e => e.id == id)
+    const objectToDelete = persons.filter(e => e.id === id)
     const nameToPrint = objectToDelete[0].name
     if(window.confirm(`Delete ${nameToPrint}?`)){
-      noteService
+      personService
       .deleteName(id)
       .then(updatePersons)
       .then(setNotify("Deleted " + nameToPrint))
@@ -87,7 +86,7 @@ const App = () => {
   }
 
   const updatePersons = () => {
-    noteService
+    personService
       .getAll()
       .then(response => setPersons(response.data))
   }
@@ -108,11 +107,11 @@ const App = () => {
 }
 
 const Notification = ({message}) => {
-  if(message == "") return null
-  else if (message.slice(0, 11) == "Information")
-    return <div className='error'>{`${message}`}</div>
-  else
-    return <div className='notification'>{`${message}`}</div>
+  if(message.error) 
+    return <div className='error'>{message.error}</div>
+  if(message === "") 
+    return null
+  return <div className='notification'>{`${message}`}</div>
 }
 
 const AddPerson = (props) =>{
