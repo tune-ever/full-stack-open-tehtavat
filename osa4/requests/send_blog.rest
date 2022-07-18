@@ -1,9 +1,1 @@
-POST http://localhost:3003/api/blogs
-content-type: application/json
-
-{
-  "title": "teadasst",
-  "author": "monasdasdgo",
-  "url": "testiasdasdi",
-  "likes": 5
-}
+DELETE http://localhost:3003/api/blogs/62d35faae0f0bea70225bbd0
