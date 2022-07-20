@@ -1,7 +1,10 @@
-post http://localhost:3003/api/users
+post http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFrdSIsImlkIjoiNjJkNzBlMTc5MGY1YTgwNDk2Yzc0NjY3IiwiaWF0IjoxNjU4MjkzNDEwLCJleHAiOjE2NTgyOTcwMTB9.c85nq0WPx6l6ZnzdR3iediDIweDFc1C2Q8QUEPR0JVw
 
 {
-  "username": "testuser",
-  "password": "a"
+  "title": "asdasd",
+  "author": "joku boy",
+  "url": "joku",
+  "likes": 17
 }
