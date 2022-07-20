@@ -94,7 +94,6 @@ describe('when there is initially one user at db', () => {
       .expect(400)
       .expect('Content-Type', /application\/json/)
     
-    console.log(result.error.text)
     expect(result.error.text).toContain("password required")
 
     const usersAtEnd = await helper.usersInDb()

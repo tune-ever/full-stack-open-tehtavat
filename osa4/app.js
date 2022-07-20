@@ -12,7 +12,7 @@ const mongoose = require('mongoose')
 
 
 
-logger.info('connecting')
+logger.info(`connecting to ${config.MONGODB_URI}`)
 
 mongoose.connect(config.MONGODB_URI)
   .then(() => {

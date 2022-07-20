@@ -1,10 +1,29 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+require('dotenv').config()
 const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const jwt = require('jsonwebtoken')
+let token = ""
 
+beforeAll(async () => {
+  const testUser = {
+    username: "testi",
+    name: "testaaja",
+    password: "testing"
+  }
+
+  await api
+    .post('/api/users')
+    .send(testUser)
+  
+  const response = await api
+    .post('/api/login')
+    .send({ username: 'testi', password: 'testing' })
+  token = response.body.token
+})
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -27,7 +46,9 @@ test('if like is not specified set it to 0', async () => {
   }
   await api
     .post('/api/blogs')
+    .set({ authorization: `bearer ${token}`})
     .send(newBlog)
+
   const response = await api.get('/api/blogs')
   const thirdBlog = response.body[2]
 
@@ -64,6 +85,7 @@ test('a valid blog can be added', async () => {
 
   await api
     .post('/api/blogs')
+    .set({ authorization: `bearer ${token}`})
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -85,6 +107,7 @@ test('a blog without title is not added', async () => {
   
   await api
     .post('/api/blogs')
+    .set({ authorization: `bearer ${token}`})
     .send(newBlog)
     .expect(400)
   
@@ -102,6 +125,7 @@ test('a blog without url is not added', async () => {
   
   await api
     .post('/api/blogs')
+    .set({ authorization: `bearer ${token}`})
     .send(newBlog)
     .expect(400)
   
@@ -110,19 +134,44 @@ test('a blog without url is not added', async () => {
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
 })
 
-test('delete succeeds with valid id', async () =>{
-  const blogsAtStart = await helper.blogsInDb()
-  const blogToDelete = blogsAtStart[0]
+test('delete succeeds with valid id from same user', async () =>{
+  const newBlog = {
+    title: "Kuva blogi",
+    author: "Mikki Hiiri",
+    url: "testi",
+    likes: 7
+  }
+  await api
+    .post('/api/blogs')
+    .set({ authorization: `bearer ${token}`})
+    .send(newBlog)
+
+  const blogsAfterAdding = await helper.blogsInDb()
+  const blogToDelete = blogsAfterAdding[2]
   await api
     .delete(`/api/blogs/${blogToDelete.id}`)
+    .set({ authorization: `bearer ${token}`})
     .expect(204)
   
   const blogsAtEnd = await helper.blogsInDb()
-  expect(blogsAtEnd.length).toBe(helper.initialBlogs.length -1)
+  expect(blogsAtEnd.length).toBe(helper.initialBlogs.length)
 
   const titles = blogsAtEnd.map(r => r.title)
 
   expect(titles).not.toContain(blogToDelete.title)
+})
+
+test('adding blog gives 401 error with no token', async () => {
+  const newBlog = {
+    title: "Kuva blogi",
+    author: "Mikki Hiiri",
+    url: "testi",
+    likes: 7
+  }
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401)
 })
 
 afterAll(() => {
