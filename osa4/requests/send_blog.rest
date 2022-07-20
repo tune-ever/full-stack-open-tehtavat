@@ -1,1 +1,9 @@
-DELETE http://localhost:3003/api/blogs/62d35faae0f0bea70225bbd0
+post http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzIR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFrdSIsImlkIjoiNjJkNzBlMTc5MGY1YTgwNDk2Yzc0NjY3IiwiaWF0IjoxNjU4MjYxOTI5fQ.kSfP1GxP2KT_443w8j85r5cbtXiiyaM45uZp2g_exao
+
+{
+  "title": "token testi",
+  "author": "token",
+  "url": "joku joku"
+}
