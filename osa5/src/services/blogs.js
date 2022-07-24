@@ -6,4 +6,11 @@ const getAll = () => {
   return request.then(response => response.data)
 }
 
-export default { getAll }
+const create = (newBlog, token) => 
+axios.post(baseUrl, newBlog, 
+  { headers: 
+    { 'Authorization': `Bearer ${token}`}
+  }
+)
+
+export default { getAll, create }
