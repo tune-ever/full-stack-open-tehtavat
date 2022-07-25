@@ -17,6 +17,7 @@ const LoginForm = ({
       <div>
         password
         <input
+        type="password"
         value={password}
         onChange={handlePasswordChange}
         />

@@ -23,12 +23,16 @@ const Blog = (props) => {
   }
 
   const handleDelete = async () => {
-    if(window.confirm(`Remove blog ${blog}`)){
+    if(window.confirm(`Remove blog ${blog.title}`)){
       const id = blog.id
       const token = JSON.parse(window.localStorage.loggedBlogappUser).token
       await blogService.removeBlog(id, token)
       props.updateBlogs()
     }
+    props.setNotification(`${blog.title} was removed`)
+    setTimeout(() => {
+      props.setNotification(null)
+    }, 5000)
   }
 
   if(!showAll)
