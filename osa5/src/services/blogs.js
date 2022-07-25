@@ -12,5 +12,22 @@ axios.post(baseUrl, newBlog,
     { 'Authorization': `Bearer ${token}`}
   }
 )
+.then(response => response)
 
-export default { getAll, create }
+const addLike = async (blog) => {
+  console.log(blog)
+  const updateBlog = {
+    user: blog.user.id,
+    likes: blog.likes +1,
+    author: blog.author,
+    url: blog.url
+  }
+  await axios.put(`/api/blogs/${blog.id}`, updateBlog)
+}
+
+const removeBlog = async (id, token) => {
+  await axios.delete(`/api/blogs/${id}`, 
+  { headers: { 'Authorization': `Bearer ${token}`}})
+}
+
+export default { getAll, create, addLike, removeBlog }
