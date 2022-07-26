@@ -3,8 +3,6 @@ import blogService from '../services/blogs'
 
 const Blog = (props) => {
   const [showAll, setShowAll] = useState(false)
-  const blogUsername = props.blog.user.username
-  const loggedUser = props.user.username
 
   const blog = props.blog
   const blogStyle = {
@@ -38,21 +36,22 @@ const Blog = (props) => {
   if(!showAll)
     return(
       <div style={blogStyle}>
-        {blog.title} {blog.author}
+        <div>{blog.title}</div>
+        <div>{blog.author}</div>
         <button onClick={toggleVisibility}>view</button>
       </div>
     )
   return (
     <div style={blogStyle}>
-      {blog.title}<br/>
-      {blog.url}<br/>
-      {blog.likes}
+      <div data-testid='title'>{blog.title}</div><br/>
+      <div data-testid='url'>{blog.url}</div><br/>
+      <div data-testid='likes'>{blog.likes}</div>
       <button onClick={addLike}>like</button>
       <br/>
-      {blog.author}
+      <div data-testid='author'>{blog.author}</div>
       <button onClick={toggleVisibility}>hide</button>
       <br/>
-      {(blogUsername === loggedUser) 
+      {(props.blog.user.username === props.user.username)
       && <button onClick={handleDelete}>remove</button>
       }
     </div>

@@ -22,7 +22,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -38,10 +38,10 @@ const App = () => {
     window.localStorage.clear()
     setUser(null)
   }
-  
+
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password
@@ -60,15 +60,15 @@ const App = () => {
       }, 5000)
     }
   }
-  
+
   const setErrorMessage = (message) => {
     setNotification(message)
   }
-  
+
   const createBlog = async (newBlog) => {
     const token = JSON.parse(window.localStorage.loggedBlogappUser).token
     blogFormRef.current.toggleVisibility()
-    
+
     const response = await blogService.create(newBlog, token)
     setBlogs(blogs.concat(response.data))
     setNotification(`a new blog ${newBlog.title} was added`)
@@ -78,7 +78,7 @@ const App = () => {
   }
 
   const loginForm = () => {
-    return ( 
+    return (
       <Togglable buttonLabel='login'>
         <LoginForm
           username={username}
@@ -90,17 +90,17 @@ const App = () => {
       </Togglable>
     )
   }
-  
+
   if (!user) {
     return (
       <div>
         {
-        notification && 
+          notification &&
         <div className='error'>{notification}</div>
         }
         <h2>Log in to app</h2>
         {
-        loginForm ()
+          loginForm ()
         }
       </div>
     )
@@ -112,7 +112,7 @@ const App = () => {
         <div className='notification'>{notification}</div>
       }
       <h2>blogs</h2>
-      logged in as {user.username} 
+      logged in as {user.username}
       <button onClick={handleLogout}>Logout</button>
       <Togglable buttonLabel='new blog' ref={blogFormRef}>
         <h2>Create new blog</h2>
@@ -121,12 +121,12 @@ const App = () => {
       <br/>
       {
         blogs
-         .sort((a, b) => b.likes - a.likes)
-         .map(blog =><Blog 
-            notification={notification} 
+          .sort((a, b) => b.likes - a.likes)
+          .map(blog => <Blog
+            notification={notification}
             setNotification={setNotification}
-            updateBlogs={updateBlogs} 
-            user={user} key={blog.id} 
+            updateBlogs={updateBlogs}
+            user={user} key={blog.id}
             blog={blog}
           />)
       }

@@ -6,16 +6,15 @@ const getAll = () => {
   return request.then(response => response.data)
 }
 
-const create = (newBlog, token) => 
-axios.post(baseUrl, newBlog, 
-  { headers: 
-    { 'Authorization': `Bearer ${token}`}
-  }
-)
-.then(response => response)
+const create = (newBlog, token) =>
+  axios.post(baseUrl, newBlog,
+    { headers:
+      { 'Authorization': `Bearer ${token}` }
+    }
+  )
+    .then(response => response)
 
 const addLike = async (blog) => {
-  console.log(blog)
   const updateBlog = {
     user: blog.user.id,
     likes: blog.likes +1,
@@ -26,8 +25,8 @@ const addLike = async (blog) => {
 }
 
 const removeBlog = async (id, token) => {
-  await axios.delete(`/api/blogs/${id}`, 
-  { headers: { 'Authorization': `Bearer ${token}`}})
+  await axios.delete(`/api/blogs/${id}`,
+    { headers: { 'Authorization': `Bearer ${token}` } })
 }
 
 export default { getAll, create, addLike, removeBlog }
