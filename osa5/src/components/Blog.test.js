@@ -56,7 +56,7 @@ test('when button pressed show url and likes too', async () => {
   expect(likesElement).toContainHTML('10')
 })
 
-test('if like is pressed twice then updateBlogs is called twice', async () => {
+test('if like is pressed twice then event handler is called twice', async () => {
   const blog = {
     title: 'asd',
     author: 'joku',
@@ -67,7 +67,7 @@ test('if like is pressed twice then updateBlogs is called twice', async () => {
 
   const mockHandler = jest.fn()
 
-  render(<Blog blog={blog} user={mockUser} updateblogs={mockHandler} />)
+  render(<Blog blog={blog} user={mockUser} addLike={mockHandler} />)
 
   const user = userEvent.setup()
   const viewButton = screen.getByText('view')

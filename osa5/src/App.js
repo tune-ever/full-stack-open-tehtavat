@@ -91,6 +91,11 @@ const App = () => {
     )
   }
 
+  const addLike = async (blog) => {
+    await blogService.addLike(blog)
+    updateBlogs()
+  }
+
   if (!user) {
     return (
       <div>
@@ -128,6 +133,7 @@ const App = () => {
             updateBlogs={updateBlogs}
             user={user} key={blog.id}
             blog={blog}
+            addLike={addLike}
           />)
       }
     </div>

@@ -15,11 +15,6 @@ const Blog = (props) => {
     setShowAll(!showAll)
   }
 
-  const addLike = async () => {
-    await blogService.addLike(blog)
-    props.updateBlogs()
-  }
-
   const handleDelete = async () => {
     if(window.confirm(`Remove blog ${blog.title}`)){
       const id = blog.id
@@ -46,7 +41,7 @@ const Blog = (props) => {
       <div data-testid='title'>{blog.title}</div><br/>
       <div data-testid='url'>{blog.url}</div><br/>
       <div data-testid='likes'>{blog.likes}</div>
-      <button onClick={addLike}>like</button>
+      <button onClick={() => props.addLike(blog)}>like</button>
       <br/>
       <div data-testid='author'>{blog.author}</div>
       <button onClick={toggleVisibility}>hide</button>
